@@ -108,6 +108,11 @@ class FlutterUploader {
         'data': upload.data,
         'tag': upload.tag,
         'allowCellular': upload.allowCellular,
+        'apiUrl': upload.apiUrl,
+        'backBlazeUrl': upload.backBlazeUrl,
+        'uuid': upload.uuid,
+        'assignmentId': upload.assignmentId,
+        'creator': upload.creatorId
       }))!;
     }
     if (upload is RawUpload) {
@@ -118,6 +123,11 @@ class FlutterUploader {
         'headers': upload.headers,
         'tag': upload.tag,
         'allowCellular': upload.allowCellular,
+        'apiUrl': upload.apiUrl,
+        'backBlazeUrl': upload.backBlazeUrl,
+        'uuid': upload.uuid,
+        'assignmentId': upload.assignmentId,
+        'creator': upload.creatorId
       }))!;
     }
 

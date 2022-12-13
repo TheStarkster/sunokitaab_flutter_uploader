@@ -86,6 +86,11 @@ public class MethodCallHandlerImpl implements MethodCallHandler {
   }
 
   private void enqueue(MethodCall call, MethodChannel.Result result) {
+    String apiUrl = call.argument("apiUrl");
+    String backBlazeUrl = call.argument("backBlazeUrl");
+    String uuid = call.argument("uuid");
+    String creator = call.argument("creator");
+    String assignmentId = call.argument("assignmentId");
     String url = call.argument("url");
     String method = call.argument("method");
     List<Map<String, String>> files = call.argument("files");
@@ -119,17 +124,24 @@ public class MethodCallHandlerImpl implements MethodCallHandler {
     }
 
     WorkRequest request =
-        buildRequest(
-            new UploadTask(
-                url,
-                method,
-                items,
-                headers,
-                parameters,
-                connectionTimeout,
-                false,
-                tag,
-                allowCellular));
+      buildRequest(
+        new UploadTask(
+          url,
+          method,
+          items,
+          headers,
+          parameters,
+          connectionTimeout,
+          false,
+          tag,
+          allowCellular,
+          apiUrl,
+          uuid,
+          backBlazeUrl,
+          creator,
+          assignmentId
+        )
+      );
 
     WorkManager.getInstance(context)
         .enqueue(request)
@@ -147,7 +159,12 @@ public class MethodCallHandlerImpl implements MethodCallHandler {
   }
 
   private void enqueueBinary(MethodCall call, MethodChannel.Result result) {
+    String apiUrl = call.argument("apiUrl");
+    String backBlazeUrl = call.argument("backBlazeUrl");
+    String uuid = call.argument("uuid");
+    String creator = call.argument("creator");
     String url = call.argument("url");
+    String assignmentId = call.argument("assignmentId");
     String method = call.argument("method");
     String path = call.argument("path");
     Map<String, String> headers = call.argument("headers");
@@ -174,17 +191,24 @@ public class MethodCallHandlerImpl implements MethodCallHandler {
     }
 
     WorkRequest request =
-        buildRequest(
-            new UploadTask(
-                url,
-                method,
-                Collections.singletonList(new FileItem(path)),
-                headers,
-                Collections.emptyMap(),
-                connectionTimeout,
-                true,
-                tag,
-                allowCellular));
+      buildRequest(
+        new UploadTask(
+          url,
+          method,
+          Collections.singletonList(new FileItem(path)),
+          headers,
+          Collections.emptyMap(),
+          connectionTimeout,
+          true,
+          tag,
+          allowCellular,
+          apiUrl,
+          uuid,
+          backBlazeUrl,
+          creator,
+          assignmentId
+        )
+      );
 
     WorkManager.getInstance(context)
         .enqueue(request)
@@ -231,12 +255,17 @@ public class MethodCallHandlerImpl implements MethodCallHandler {
   private WorkRequest buildRequest(UploadTask task) {
     Gson gson = new Gson();
 
-    Data.Builder dataBuilder =
-        new Data.Builder()
+    Data.Builder dataBuilder = new Data.Builder()
             .putString(UploadWorker.ARG_URL, task.getURL())
             .putString(UploadWorker.ARG_METHOD, task.getMethod())
             .putInt(UploadWorker.ARG_REQUEST_TIMEOUT, task.getTimeout())
             .putBoolean(UploadWorker.ARG_BINARY_UPLOAD, task.isBinaryUpload())
+            .putString(UploadWorker.ARG_UPLOAD_REQUEST_TAG, task.getTag())
+            .putString(UploadWorker.ARG_BACKBLAZE, task.getBackBlazeUrl())
+            .putString(UploadWorker.ARG_UUID, task.getUuid())
+            .putString(UploadWorker.ARG_ASSIGNMENT_ID, task.getAssignmentId())
+            .putString(UploadWorker.ARG_CREATOR, task.getCreator())
+            .putString(UploadWorker.ARG_API_URL, task.getApiUrl())
             .putString(UploadWorker.ARG_UPLOAD_REQUEST_TAG, task.getTag());
 
     List<FileItem> files = task.getFiles();

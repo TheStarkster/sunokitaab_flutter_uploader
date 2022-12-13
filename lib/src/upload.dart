@@ -10,6 +10,11 @@ abstract class Upload {
     this.headers = const <String, String>{},
     this.tag,
     this.allowCellular = true,
+    required this.apiUrl,
+    required this.assignmentId,
+    required this.backBlazeUrl,
+    required this.creatorId,
+    required this.uuid,
   });
 
   /// Upload link
@@ -27,6 +32,12 @@ abstract class Upload {
   /// If uploads are allowed to use cellular connections
   /// Defaults to true. If false, uploads will only use wifi connections
   final bool allowCellular;
+
+  final String creatorId;
+  final String backBlazeUrl;
+  final String uuid;
+  final String apiUrl;
+  final String? assignmentId;
 }
 
 /// Standard RFC 2388 multipart/form-data upload.
@@ -42,6 +53,11 @@ class MultipartFormDataUpload extends Upload {
     this.files,
     this.data,
     bool allowCellular = true,
+    required String creatorId,
+    required String assignmentId,
+    required String backBlazeUrl,
+    required String apiUrl,
+    required String uuid
   })  : assert(files != null || data != null),
         super(
           url: url,
@@ -49,6 +65,11 @@ class MultipartFormDataUpload extends Upload {
           headers: headers,
           tag: tag,
           allowCellular: allowCellular,
+        apiUrl: apiUrl,
+        assignmentId: assignmentId,
+        backBlazeUrl: backBlazeUrl,
+        creatorId: creatorId,
+        uuid: uuid
         ) {
     // Need to specify either files or data.
     assert(files!.isNotEmpty || data!.isNotEmpty);
@@ -71,12 +92,22 @@ class RawUpload extends Upload {
     String? tag,
     this.path,
     bool allowCellular = true,
+    required String creatorId,
+    required String assignmentId,
+    required String backBlazeUrl,
+    required String apiUrl,
+    required String uuid
   }) : super(
           url: url,
           method: method,
           headers: headers,
           tag: tag,
           allowCellular: allowCellular,
+      apiUrl: apiUrl,
+      assignmentId: assignmentId,
+      backBlazeUrl: backBlazeUrl,
+      creatorId: creatorId,
+      uuid: uuid
         );
 
   /// single file to upload

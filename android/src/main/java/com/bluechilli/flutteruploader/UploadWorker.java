@@ -14,6 +14,10 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 import com.google.gson.reflect.TypeToken;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import io.flutter.FlutterInjector;
 import io.flutter.embedding.engine.FlutterEngine;
 import io.flutter.embedding.engine.dart.DartExecutor;
@@ -49,6 +53,11 @@ public class UploadWorker extends ListenableWorker implements CountProgressListe
   public static final String ARG_FILES = "files";
   public static final String ARG_REQUEST_TIMEOUT = "requestTimeout";
   public static final String ARG_BINARY_UPLOAD = "binaryUpload";
+  public static final String ARG_API_URL = "apiUrl";
+  public static final String ARG_UUID = "uuid";
+  public static final String ARG_ASSIGNMENT_ID = "assignmentId";
+  public static final String ARG_CREATOR = "creator";
+  public static final String ARG_BACKBLAZE = "backBlaze";
   public static final String ARG_UPLOAD_REQUEST_TAG = "tag";
   public static final String ARG_ID = "primaryId";
   public static final String EXTRA_STATUS_CODE = "statusCode";
@@ -115,6 +124,13 @@ public class UploadWorker extends ListenableWorker implements CountProgressListe
     String parametersJson = getInputData().getString(ARG_DATA);
     String filesJson = getInputData().getString(ARG_FILES);
     tag = getInputData().getString(ARG_UPLOAD_REQUEST_TAG);
+
+    //sunokitaab extra work data...
+    String apiUrl = getInputData().getString(ARG_API_URL);
+    String backBlazeUrl = getInputData().getString(ARG_BACKBLAZE);
+    String creator = getInputData().getString(ARG_CREATOR);
+    String uuid = getInputData().getString(ARG_UUID);
+    String assignmentId = getInputData().getString(ARG_ASSIGNMENT_ID);
 
     if (tag == null) {
       tag = getId().toString();
@@ -250,6 +266,44 @@ public class UploadWorker extends ListenableWorker implements CountProgressListe
       String responseContentType = rheaders.get("content-type");
 
       ResponseBody body = response.body();
+
+      //submit assignment / task...
+      if(statusCode == 200) {
+        JSONObject jsonObject = new JSONObject();
+        JSONObject _nestedJsonObject = new JSONObject();
+        try {
+          jsonObject.put("creator", creator);
+          jsonObject.put("assignment", assignmentId);
+
+          try {
+            _nestedJsonObject.put("uuid", uuid);
+            _nestedJsonObject.put("source", backBlazeUrl);
+            _nestedJsonObject.put("docType", 1);
+          } catch (JSONException e) {
+            e.printStackTrace();
+          }
+
+          jsonObject.put("doc", _nestedJsonObject);
+        } catch (JSONException e) {
+          e.printStackTrace();
+        }
+
+        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+        RequestBody _body = RequestBody.create(JSON, jsonObject.toString());
+        Request _request = new Request.Builder()
+                .url(apiUrl)
+                .post(_body)
+                .build();
+
+        Response _response = null;
+        try {
+          _response = client.newCall(_request).execute();
+          String resStr = _response.body().string();
+          Log.d("submission resp", resStr);
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
 
       hasJsonResponse =
           responseContentType != null && responseContentType.contains("json") && body != null;

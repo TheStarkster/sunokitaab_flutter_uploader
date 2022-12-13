@@ -7,6 +7,11 @@ import java.util.Map;
 public class UploadTask {
 
   private String url;
+  private String apiUrl;
+  private String uuid;
+  private String backBlazeUrl;
+  private String assignmentId;
+  private String creator;
   private String method;
   private Map<String, String> headers;
   private Map<String, String> data;
@@ -25,7 +30,13 @@ public class UploadTask {
       int requestTimeoutInSeconds,
       boolean binaryUpload,
       String tag,
-      boolean allowCellular) {
+      boolean allowCellular,
+      String apiUrl,
+      String uuid,
+      String backBlazeUrl,
+      String creator,
+      String assignmentId
+      ) {
     this.url = url;
     this.method = method;
     this.files = files;
@@ -35,6 +46,11 @@ public class UploadTask {
     this.binaryUpload = binaryUpload;
     this.tag = tag;
     this.allowCellular = allowCellular;
+    this.apiUrl = apiUrl;
+    this.uuid = uuid;
+    this.backBlazeUrl = backBlazeUrl;
+    this.creator = creator;
+    this.assignmentId = assignmentId;
   }
 
   public String getURL() {
@@ -44,6 +60,12 @@ public class UploadTask {
   public Uri getUri() {
     return Uri.parse(url);
   }
+
+  public  String getApiUrl() { return apiUrl; }
+  public  String getAssignmentId() { return assignmentId; }
+  public  String getUuid() { return uuid; }
+  public  String getBackBlazeUrl() { return backBlazeUrl; }
+  public  String getCreator() { return creator; }
 
   public String getMethod() {
     return method;
