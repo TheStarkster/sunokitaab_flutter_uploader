@@ -201,44 +201,44 @@ class _UploadScreenState extends State<UploadScreen> {
     final binary = prefs.getBool('binary') ?? false;
     final allowCellular = prefs.getBool('allowCellular') ?? true;
 
-    await widget.uploader.enqueue(_buildUpload(
-      binary,
-      paths.whereType<String>().toList(),
-      allowCellular,
-    ));
+    // await widget.uploader.enqueue(_buildUpload(
+    //   binary,
+    //   paths.whereType<String>().toList(),
+    //   allowCellular,
+    // ));
 
     widget.onUploadStarted();
   }
 
-  Upload _buildUpload(bool binary, List<String> paths,
-      [bool allowCellular = true]) {
-    const tag = 'upload';
-
-    var url = binary
-        ? widget.uploadURL.replace(path: widget.uploadURL.path + 'Binary')
-        : widget.uploadURL;
-
-    url = url.replace(queryParameters: {
-      'simulate': _serverBehavior.name,
-    });
-
-    if (binary) {
-      return RawUpload(
-        url: url.toString(),
-        path: paths.first,
-        method: UploadMethod.POST,
-        tag: tag,
-        allowCellular: allowCellular,
-      );
-    } else {
-      return MultipartFormDataUpload(
-        url: url.toString(),
-        data: {'name': 'john'},
-        files: paths.map((e) => FileItem(path: e, field: 'file')).toList(),
-        method: UploadMethod.POST,
-        tag: tag,
-        allowCellular: allowCellular,
-      );
-    }
-  }
+  // Upload _buildUpload(bool binary, List<String> paths,
+  //     [bool allowCellular = true]) {
+  //   const tag = 'upload';
+  //
+  //   var url = binary
+  //       ? widget.uploadURL.replace(path: widget.uploadURL.path + 'Binary')
+  //       : widget.uploadURL;
+  //
+  //   url = url.replace(queryParameters: {
+  //     'simulate': _serverBehavior.name,
+  //   });
+  //
+  //   if (binary) {
+  //     return RawUpload(
+  //       url: url.toString(),
+  //       path: paths.first,
+  //       method: UploadMethod.POST,
+  //       tag: tag,
+  //       allowCellular: allowCellular,
+  //     );
+  //   } else {
+  //     return MultipartFormDataUpload(
+  //       url: url.toString(),
+  //       data: {'name': 'john'},
+  //       files: paths.map((e) => FileItem(path: e, field: 'file')).toList(),
+  //       method: UploadMethod.POST,
+  //       tag: tag,
+  //       allowCellular: allowCellular,
+  //     );
+  //   }
+  // }
 }
